@@ -2,7 +2,7 @@
 Automated workforce scheduling and attendance tracking system using Google Apps Script
 
 ## Overview
-This project is a custom-built automation tool designed to manage shift rotations and attendance for a production team. It replaces manual processes with a streamlined digital workflow.
+This tool started as a simple script to solve a real pain point: managing complicated 24/7 shift rotations for a large production team at a manufacturing plant (with ver15.1).
 
 ## Key Features
 - **Automated Scheduling:** Handles complex shift rotations (ADM, S1, S2, etc.).
@@ -15,4 +15,4 @@ This project is a custom-built automation tool designed to manage shift rotation
 - **HTML/CSS** (for Web App interface)
 
 ## How it Works
-The system processes raw input data through custom logic to generate optimized schedules, reducing administrative workload by 80%.
+I built this using Google Apps Script to link input sheets directly with the scheduling engine. It takes raw attendance data and processes it through a custom-coded logic gate. This cut down my administrative work from several hours a week to about 30-45 minutes of final review.
