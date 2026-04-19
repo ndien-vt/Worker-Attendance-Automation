@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+ <head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ <base target="_top">
+ <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+ <style>
+ /* --- ÉP TOÀN BỘ TRANG VỪA KHÍT MÀN HÌNH ĐIỆN THOẠI --- */
+ html, body { 
+ height: 100dvh; 
+ margin: 0; 
+ padding: 0; 
+ font-family: 'Roboto', sans-serif; 
+ background-color: #ffffff; 
+ overflow: hidden; 
+ } 
+ /* --- LOADER --- */
+ #loader-container { 
+ position: fixed; 
+ top: 0; left: 0; width: 100%; height: 100%; 
+ display: flex; flex-direction: column; align-items: center; justify-content: center; 
+ background-color: white; z-index: 9999; 
+ } 
+ .spinner { 
+ border: 5px solid #f3f3f3; border-top: 5px solid #0056b3; border-radius: 50%; 
+ width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px; 
+ } 
+ .loading-text { color: #0056b3; font-size: 16px; font-weight: 500; } 
+ @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } 
+ 
+ /* --- MAIN CONTENT --- */
+ #content { 
+ display: none; 
+ height: 100%; 
+ flex-direction: column; 
+ padding: 8px; /* Lề rộng rãi như cũ */
+ box-sizing: border-box; 
+ } 
+ 
+ /* --- 1. TITLE SECTION (GIẢM KÍCH THƯỚC TIÊU ĐỀ) --- */
+ .main-title { 
+ text-align: center; font-weight: bold; 
+ font-size: 14px; /* Giảm cỡ chữ tiêu đề để tiết kiệm chỗ */
+ color: #333; 
+ margin-bottom: 4px; text-transform: uppercase; 
+ flex-shrink: 0; 
+ } 
+ .info-bar { 
+ display: flex; justify-content: space-between; align-items: center; 
+ margin-bottom: 4px; padding: 0 2px; 
+ flex-shrink: 0; 
+ } 
+ .info-text { font-size: 11px; font-style: italic; color: #666; font-weight: bold; } 
+ .dept-text { color: #0056b3; } 
+ 
+ /* --- TABLE WRAPPER --- */
+ .table-responsive { 
+ flex: 1; 
+ width: 100%; 
+ overflow: auto; 
+ -webkit-overflow-scrolling: touch; 
+ border: 1px solid #999; 
+ margin-bottom: 2px; 
+ } 
+ 
+ /* --- 2. TABLE STYLES (GIỮ NGUYÊN CHIỀU CAO VÀ CỠ CHỮ NHƯ CŨ) --- */
+ .schedule-table { 
+ width: 100%; 
+ border-collapse: collapse; 
+ font-size: 12.5px; /* Giữ nguyên cỡ chữ to rõ */
+ } 
+ .schedule-table th, .schedule-table td { 
+ border: 1px solid #c0c0c0; text-align: center; 
+ padding: 5px 2px; /* Giữ nguyên lề */
+ min-width: 36px; 
+ height: 28px; /* Giữ nguyên chiều cao 28px */
+ box-sizing: border-box; 
+ } 
+ 
+ /* --- 3. HEADER COLORS & STICKY TOP (CỐ ĐỊNH HÀNG NGÀY & THỨ) --- */
+ .header-date { 
+ background-color: #0070c0; color: white; font-weight: bold; 
+ position: sticky; top: 0; z-index: 20; /* Dính chặt ở mép trên */
+ } 
+ .header-day { 
+ background-color: #f2f2f2; color: black; font-weight: bold; 
+ position: sticky; top: 28px; z-index: 20; /* Dính ngay dưới hàng Ngày (chiều cao 28px) */
+ } 
+ .header-day.sunday { 
+ background-color: #f2f2f2; color: #ff0000; font-weight: bold; 
+ position: sticky; top: 28px; z-index: 20; 
+ } 
+ 
+ /* --- NAME COLUMN --- */
+ .col-name-header { 
+ background-color: #0056b3; color: white; font-weight: bold; vertical-align: middle; 
+ width: 135px; min-width: 135px; 
+ position: sticky; left: 0; top: 0; z-index: 30; /* GÓC TRÁI TRÊN CÙNG: Dính cả 2 chiều ngang dọc */
+ border-right: 2px solid #999; 
+ } 
+ .col-name-cell { 
+ background-color: #f2f2f2; 
+ color: #000; font-weight: bold; text-align: left !important; 
+ padding-left: 8px !important; position: sticky; left: 0; z-index: 5; /* Cố định cột dọc */
+ border-right: 2px solid #999; white-space: nowrap; 
+ overflow: hidden; text-overflow: ellipsis; 
+ } 
+ 
+ /* --- CELL COLORS --- */
+ .cell-off { background-color: #ff0000; color: white; font-weight: normal; } 
+ .cell-ph { background-color: #ffc000; color: white; font-weight: bold; } 
+ .cell-leave { background-color: #00b0f0; color: black; } 
+ .cell-ot { background-color: #ffff00; color: black; font-weight: normal; } 
+ .cell-adm { background-color: #ffffff; color: black; font-weight: bold; } 
+ .cell-std { background-color: #ffffff; color: black; } 
+ 
+ /* --- SEPARATOR ROW --- */
+ .row-separator td { 
+ background-color: #e0e0e0 !important; height: 5px !important; padding: 0 !important; 
+ border-left: none; border-right: none; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; 
+ } 
+ .row-separator .col-name-cell { background-color: #e0e0e0 !important; border-right: none; } 
+ 
+ /* --- MÀU CAM NHẠT CHO THÁNG CŨ --- */
+ .header-date.past-month { background-color: #ffcc99 !important; color: #000 !important; } 
+ </style>
+ </head>
+ <body>
+ <div id="loader-container">
+ <div class="spinner"></div>
+ <div class="loading-text">Đang tải lịch...</div>
+ </div>
+ 
+ <div id="content">
+ <!-- ĐÃ ĐỔI THÀNH T4/2026 -->
+ <div class="main-title">LỊCH LÀM VIỆC T4/2026</div>
+ <div class="info-bar">
+ <div class="info-text dept-text">Bộ phận: Blending & Packing</div>
+ <div class="info-text" id="updateTime"></div>
+ </div>
+ 
+ <div class="table-responsive">
+ <table class="schedule-table">
+ <thead>
+ <tr>
+ <th rowspan="2" class="col-name-header">Họ Tên</th>
+ </tr>
+ <tr id="header-days-row"></tr>
+ </thead>
+ <tbody id="table-body"></tbody>
+ </table>
+ </div>
+ </div>
+ 
+ <script>
+ window.onload = function() { 
+ google.script.run
+ .withSuccessHandler(renderTable) 
+ .withFailureHandler(onFailure) 
+ .getScheduleDataForWeb(); 
+ }; 
+ 
+ function renderTable(data) { 
+ if (data.error) { 
+ document.querySelector('.loading-text').innerHTML = " ❌ Lỗi: " + data.error; 
+ document.querySelector('.spinner').style.display = 'none'; 
+ return; 
+ } 
+ 
+ const headerRow1 = document.querySelector('thead tr:first-child'); 
+ data.dates.forEach(date => { 
+ let th = document.createElement('th'); 
+ th.textContent = date; th.className = 'header-date'; 
+ // ĐÃ ĐỔI THÀNH /03 ĐỂ TÔ MÀU CHO THÁNG 3
+ if (date.includes('/03')) th.classList.add('past-month'); 
+ headerRow1.appendChild(th); 
+ }); 
+ 
+ const headerRow2 = document.getElementById('header-days-row'); 
+ data.days.forEach(day => { 
+ let th = document.createElement('th'); 
+ th.textContent = day; th.className = 'header-day'; 
+ if (day === 'CN' || day === 'Sun') th.classList.add('sunday'); 
+ headerRow2.appendChild(th); 
+ }); 
+ 
+ const tbody = document.getElementById('table-body'); 
+ data.employees.forEach(emp => { 
+ let tr = document.createElement('tr'); 
+ if (emp.isSeparator) { 
+ tr.className = 'row-separator'; 
+ let tdName = document.createElement('td'); tdName.className = 'col-name-cell'; tr.appendChild(tdName); 
+ for(let i=0; i<data.dates.length; i++) { 
+ tr.appendChild(document.createElement('td')); } 
+ } else { 
+ let tdName = document.createElement('td'); 
+ tdName.textContent = emp.name; tdName.className = 'col-name-cell'; 
+ tr.appendChild(tdName); 
+ emp.shifts.forEach(shift => { 
+ let td = document.createElement('td'); 
+ let val = shift ? String(shift).trim() : ""; 
+ td.textContent = val; 
+ if (val.startsWith('O') || val === 'CN' || val === 'OFF') 
+ td.className = 'cell-off'; 
+ else if (val === 'PH') td.className = 'cell-ph'; 
+ // ĐÃ BỔ SUNG UL VÀO ĐÂY
+ else if (val.includes('AL') || val.includes('UL') || val.includes('/')) td.className = 'cell-leave'; 
+ else if (val.includes('+')) td.className = 'cell-ot'; 
+ else if (val === 'ADM') td.className = 'cell-adm'; 
+ else td.className = 'cell-std'; 
+ tr.appendChild(td); 
+ }); 
+ } 
+ tbody.appendChild(tr); 
+ }); 
+ document.getElementById('updateTime').textContent = "Cập nhật: " + data.updateTime; 
+ document.getElementById('loader-container').style.display = 'none'; 
+ document.getElementById('content').style.display = 'flex'; 
+ } 
+ 
+ function onFailure(error) { 
+ document.querySelector('.loading-text').innerHTML = " ❌ Lỗi: " + error.message; 
+ document.querySelector('.spinner').style.borderTopColor = 'red'; 
+ document.querySelector('.spinner').style.animation = 'none'; 
+ } 
+ </script>
+ </body>
+</html>
